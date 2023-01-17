@@ -1,0 +1,20 @@
+{
+  "name": "rpa_abertura_conta_sicaq",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "amqplib": "^0.10.0",
+    "axios": "^0.27.2",
+    "dotenv": "^16.0.1",
+    "puppeteer": "13.2.0",
+    "simplified-logger": "git+https://fdgmartins@bitbucket.org/fdgmartins/simplified-logger.git"
+  }
+}
