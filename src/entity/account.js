@@ -1,5 +1,6 @@
 
 export const AccountResult = {
+    idCliente: null,
     cpfCliente: null,
     crot: {
         statusCrot: null,
@@ -15,6 +16,7 @@ export const AccountResult = {
 export class Account {
     constructor() {
         this._result = {
+            idCliente: null,
             cpfCliente: null,
             crot: {
                 statusCrot: null,

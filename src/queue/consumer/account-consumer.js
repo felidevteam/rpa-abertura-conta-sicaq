@@ -28,13 +28,13 @@ export class AccountConsumer {
         const logger = this.logger;
         await this.amqpServer.assertQueue(this.queueName);
         this.consumerTag = await this.amqpServer.consume(this.queueName, async message => {
-            const account = AccountAdapter.fromAmqpRequestMessage(message);
+            const result = await accountService.checkAccountOverDraft(message);
             logger.debug("Mensagem recebida",
              { 
                 // TODO AJUSTAR LOG
              }
             );
-            await accountResultPublisher.publishAccountResult(account);
+            await accountResultPublisher.publishAccountResult(result);
         });
         this.booted = true;
     }

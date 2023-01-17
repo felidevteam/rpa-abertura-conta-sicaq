@@ -54,7 +54,7 @@ export class LoginPage {
 
         this.logger.info("Finalizado consulta no site do Sicaq", jsonMessage);
 
-        return jsonMessage;
+        return account;
     }
 
     async loginSicaq(correspondenteAtual, baseHost, page) {
