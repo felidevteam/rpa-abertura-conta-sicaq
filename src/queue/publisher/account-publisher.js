@@ -1,4 +1,3 @@
-import { AccountAdapter } from "../../adapter/account-adapter.js";
 import { ApplicationError } from "../../error/application-error.js";
 
 export class AccountPublisher {
@@ -38,8 +37,7 @@ export class AccountPublisher {
                 //TODO Alterar log
             }
         );
-        const content = AccountAdapter.toAmqpResponseMessage(account);
-        const success = await this.amqpServer.sendToQueue(this.queueName, Buffer.from(JSON.stringify(content)));
+        const success = await this.amqpServer.sendToQueue(this.queueName, Buffer.from(JSON.stringify(account)));
         if (!success) {
             throw new ApplicationError("Não foi possível publicar a resposta");
         }

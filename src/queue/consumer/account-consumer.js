@@ -1,5 +1,3 @@
-import { AccountAdapter } from "../../adapter/account-adapter.js";
-
 export class AccountConsumer {
     /**
      * @param {import("../../amqp-server").AmqpServer} amqpServer 
