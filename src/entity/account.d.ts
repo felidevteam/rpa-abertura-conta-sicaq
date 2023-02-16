@@ -4,5 +4,6 @@ export class Account {
     financingValue: String;
 
     getAccountResult(): AccountResult;
-    setAccountResult(AccountState: AccountResult): void;
+    setAccountResult(Account: AccountResult): void;
+    setCrot(AccountCrot: AccountResult): void;
 }

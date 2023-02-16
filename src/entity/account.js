@@ -1,41 +1,47 @@
 
 export const AccountResult = {
-    idCliente: null,
-    cpfCliente: null,
+    idCostumerHigestIncome: null,
+    cpfCostumerHigestIncome: null,
+    cpfCostumerSecondChoice: null,
+    statusCrot: null,
+    statusCreditCard: null,
+    correspondent: {
+        id: null,
+        code: null,
+        login: null,
+        password: null
+    },
     crot: {
-        statusCrot: null,
+        approvalStatus: null,
         financingValue: null,
         financingValueFormatted: null
     },
-    creditCard: {
-        financingValue: null
-    }
+    creditCards:[ 
+        {
+            approvalStatus: null,
+            financingValue: null
+        }
+    ]
 
 }
 
 export class Account {
     constructor() {
-        this._result = {
-            idCliente: null,
-            cpfCliente: null,
-            crot: {
-                statusCrot: null,
-                financingValue: null,
-                financingValueFormatted: null
-            },
-            creditCard: {
-                statusCreditCard: null,
-                financingValue: null
-            }
-
-        };
     }
 
     getAccountResult() {
-        return this._result;
+        return AccountResult;
     }
 
     setAccountResult(accountResult) {
-        this._result = accountResult;
+        this.AccountResult = accountResult;
+    }
+
+    setCrotResult(crot) {
+        this.crot = crot;
+    }
+
+    addCreditCart(creditCard) {
+        this.creditCards.push(creditCard);
     }
 }

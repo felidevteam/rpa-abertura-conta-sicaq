@@ -10,10 +10,10 @@ export class CrotPage {
         this.logger = logger;
     }
 
-    async checkOverDraftSituation(jsonMessage, page, account) {
-
+    async checkOverDraftSituation(page, account) {
+        
         await Promise.all([
-            page.isSelectorPresent("#aMenuLink"),
+            page.isSelectorPresent("#aMenuLink")
         ]);
 
         await Promise.all([
@@ -90,11 +90,9 @@ export class CrotPage {
         ]);
 
         await Promise.all([
-            page.on('dialog', async dialog => {
-                await dialog.accept()
-            })
+            page.click("#btnEncaminhar")
         ]);
-        await page.waitTimeout(1500);
 
     }
+    
 }

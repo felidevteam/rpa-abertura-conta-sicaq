@@ -1,3 +1,5 @@
+import { accountRpaAdapter } from "../../adapter/account-rpa-adapter.js";
+
 export class AccountConsumer {
     /**
      * @param {import("../../amqp-server").AmqpServer} amqpServer 
@@ -5,9 +7,10 @@ export class AccountConsumer {
      * @param {import("../publisher/account-publisher").AccountPublisher} accountResultPublisher
      * @param {import("simplified-logger").Logger} logger 
      */
-    constructor(amqpServer, queueName, accountResultPublisher, logger) {
+    constructor(amqpServer, queueName, accountService, accountResultPublisher, logger) {
         this.amqpServer = amqpServer;
         this.queueName = queueName;
+        this.accountService = accountService;
         this.accountResultPublisher = accountResultPublisher;
         this.logger = logger.withLabel("rpa_create_account_sicaq_consumer");
         this.booted = false;
@@ -26,7 +29,13 @@ export class AccountConsumer {
         const logger = this.logger;
         await this.amqpServer.assertQueue(this.queueName);
         this.consumerTag = await this.amqpServer.consume(this.queueName, async message => {
-            const result = await accountService.checkAccountOverDraft(message);
+
+            const account = accountRpaAdapter.fromAmqpRequestMessage(message)
+            if (account.statusCrot === false && account.statusCreditCard === false){
+                logger.debug(`Ops, esse robô não era pra ser executado pois nenhum checkbox foi marcado...   Crot:${jsonMessage.statusCrot}  CreditCard:${jsonMessage.statusCreditCard}`)
+                return;
+            }
+             const result = await this.accountService.checkAccountOverDraft(account.AccountResult);
             logger.debug("Mensagem recebida",
              { 
                 // TODO AJUSTAR LOG

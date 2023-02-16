@@ -4,7 +4,7 @@ export class AccountService {
      * @param {import("../cache").Cache} cache
      * @param {import("simplified-logger").Logger} logger
      * @param {import("../repository/account-repository").AccountRepository} accountRepository 
-     * @param {import("../page/loginPage").LoginPage} loginPage
+     * @param {import("../page/login-page").LoginPage} loginPage
      */
     constructor(browser, cache, logger, accountRepository, loginPage) {
         this.browser = browser;
@@ -14,13 +14,11 @@ export class AccountService {
         this.loginPage = loginPage;
     }
 
-    async checkAccountOverDraft(jsonMessage) {
-        this.logger.info("Iniciado consulta no site do Sicaq", jsonMessage);
+    async checkAccountOverDraft(account) {
+        this.logger.info("Iniciado consulta no site do Sicaq", account);
 
         const loginResult = await this.accountRepository.getLoginsRpaAberturaConta();
 
-        this.jsonMessage = jsonMessage;
-
-        return await this.loginPage.login(this.jsonMessage, loginResult)
+        return await this.loginPage.login(account, loginResult)
     }
 }

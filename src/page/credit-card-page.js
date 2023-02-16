@@ -81,6 +81,10 @@ export class CreditCardPage {
         await Promise.all([
             page.click("#limiteCartaoSimples"),
             page.type("#limiteCartaoSimples", account._result.creditCard.financingValue),
-        ])
+        ]);
+
+        await Promise.all([
+            page.click(".btn-azul[title*='Solicita']")
+        ]);
     }
 }

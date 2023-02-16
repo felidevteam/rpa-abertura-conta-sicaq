@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export async function attachPdf(cliente_id, attach, typeDocumentId) {
+export async function uploadAttachPdf(cliente_id, attach, typeDocumentId) {
     const baseAttachURL = `https://crosis.feli.com.vc/v1/apan/clientes/${cliente_id}/anexos`;
 
     let headers = {
@@ -21,3 +21,5 @@ export async function attachPdf(cliente_id, attach, typeDocumentId) {
     console.log(result.data);
 
 }
+
+export async function downloadAttachPdf(urls, )

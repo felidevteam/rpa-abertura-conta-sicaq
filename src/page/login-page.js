@@ -7,9 +7,9 @@ export class LoginPage {
      * 
      * @param {import("../browser").Browser} browser
      * @param {import("simplified-logger").Logger} logger
-     * @param {import("./crotPage").CrotPage} crotPage
-     * @param {import("./creditCardPage").CreditCardPage} creditCardPage
-     * @param {import("./checkCrotAndCreditPage").CheckCrotAndCreditPage} checkCrotAndCreditPage
+     * @param {import("./crot-page").CrotPage} crotPage
+     * @param {import("./credit-card-page").CreditCardPage} creditCardPage
+     * @param {import("./check-crot-and-credit-page").CheckCrotAndCreditPage} checkCrotAndCreditPage
      */
     constructor(browser, logger, crotPage, creditCardPage, checkCrotAndCreditPage) {
         this.browser = browser;
@@ -19,22 +19,24 @@ export class LoginPage {
         this.checkCrotAndCreditPage = checkCrotAndCreditPage;
     }
 
-    async login(jsonMessage, loginResult) {
-        let account = new Account();
+    async login(account, loginResult) {
         let page = null;
         let baseHost = "https://caixaaqui.caixa.gov.br";
-        let correspondenteAtual = loginResult.data.find(correspondente => correspondente.correspondente_id == jsonMessage.correspondente_id);
+        let correspondenteAtual = loginResult.data.find(correspondente => correspondente.cod_correspondente == account.correspondent.code);
         if (!correspondenteAtual.bloqueado) {
             try {
 
                 page = await this.browser.getPage();
 
                 await this.loginSicaq(correspondenteAtual, baseHost, page);
-                await this.checkCrotAndCreditPage.checkCrotAndCreditCard(jsonMessage, page, account);
-                if(jsonMessage.statusCrot){
+                await this.checkCrotAndCreditPage.checkCrotAndCreditCard(account, page);
+                await page.on('dialog', async dialog => {
+                    await dialog.accept()
+                })
+                if(account.statusCrot){
                     await this.crotPage.checkOverDraftSituation(page, account);
                 }
-                if(jsonMessage.statusCreditCard) {
+                if(account.statusCreditCard) {
                     await this.creditCardPage.checkCreditCardSituation(page, account);
                 }
 
@@ -49,10 +51,10 @@ export class LoginPage {
         } else {
             await DateTimeTools.delay(10000);
             // TODO disparar aqui um log no discord
-            throw new RpaAccountSicaqError("Login bloqueado", this.jsonMessage, correspondenteAtual, true);
+            throw new RpaAccountSicaqError("Login bloqueado", this.account, correspondenteAtual, true);
         }
 
-        this.logger.info("Finalizado consulta no site do Sicaq", jsonMessage);
+        this.logger.info("Finalizado consulta no site do Sicaq", account);
 
         return account;
     }
