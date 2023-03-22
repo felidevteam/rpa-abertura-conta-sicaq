@@ -5,5 +5,7 @@ export class Account {
 
     getAccountResult(): AccountResult;
     setAccountResult(Account: AccountResult): void;
-    setCrot(AccountCrot: AccountResult): void;
-}
+    setCrotResult(AccountCrot: AccountResult): void;
+    setCorrespondent(AccountCorrespondent: AccountResult): void;
+    addCreditCart(AccountCreditCard: AccountResult): void;
+;}

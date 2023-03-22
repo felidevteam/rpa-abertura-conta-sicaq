@@ -1,4 +1,3 @@
-import { Account } from "../entity/account.js";
 import DateTimeTools from '../tools/datetime-tools.js'
 
 export class LoginPage {
@@ -29,15 +28,20 @@ export class LoginPage {
                 page = await this.browser.getPage();
 
                 await this.loginSicaq(correspondenteAtual, baseHost, page);
-                await this.checkCrotAndCreditPage.checkCrotAndCreditCard(account, page);
                 await page.on('dialog', async dialog => {
                     await dialog.accept()
                 })
+                await this.checkCrotAndCreditPage.checkCrotAndCreditCard(account, page);
                 if(account.statusCrot){
-                    await this.crotPage.checkOverDraftSituation(page, account);
+                    await this.crotPage.createAccountByCrot(page, account);
                 }
                 if(account.statusCreditCard) {
-                    await this.creditCardPage.checkCreditCardSituation(page, account);
+                    if(account.creditCards[0].approvalStatus === "Aprovada") {
+                        await this.creditCardPage.createCreditCard(page, account);
+                    }
+                    // if(!!account.creditCards[1] && account.creditCards[1].approvalStatus === "Aprovada") {
+                    //     await this.creditCardPage.createCreditCard(page, account.customerSecondChoice.cpf, account.creditCards[1].financingValue);
+                    // }
                 }
 
 

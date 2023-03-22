@@ -40,6 +40,19 @@ export class Browser {
                 "--disk-cache-size=0"
             ]
         });
+        let client = await browser.target().createCDPSession();
+        await client.send('Browser.setDownloadBehavior', {
+            behavior: 'allow', //allow downloading file and save the file using guid as the filename
+            downloadPath: './downloads', // specify the download folder
+            eventsEnabled: true //set true to emit download events (e.g. Browser.downloadWillBegin and Browser.downloadProgress)
+        });
+
+        client.on('Browser.downloadWillBegin', async (event) => {
+            //some logic here to determine the filename
+            //the event provides event.suggestedFilename and event.url
+            console.log("fazendo download....")
+        });
+
         const ppage = await browser.newPage();
         await ppage.setViewport({ width: 1024, height: 768 });
         ppage.setDefaultTimeout(this.defaultTimeout);

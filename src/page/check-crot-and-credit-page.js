@@ -26,10 +26,6 @@ export class CheckCrotAndCreditPage {
 
         if(account.statusCreditCard) {
             await this.getInfosCreditCard(page, account, approvalStatusCC, creditCardFinancingValue);
-            if (!!account.costumerSecondChoice || account.costumerSecondChoice !== null) {
-                await this.searchFormsByCPF(page, account.costumerSecondChoice.cpf);
-                await this.getInfosCreditCard(page, account, approvalStatusCC, creditCardFinancingValue);
-            }
             this.logger.info("account", account);
         }
     }
@@ -78,16 +74,22 @@ export class CheckCrotAndCreditPage {
         ]);
 
         await Promise.all([
-            page.click("a[title='Consultar']"),
+            page.clickByXpath("//a[contains(text(),'Consultar')]"),
             page.waitForNavigation({ waitUntil: "networkidle0" })
         ]);
+
+        // TODO FAZER VERIFICAÇÃO LISTA VAZIA
+        const hasCrotForm = await page.isXpathPresent("//*[contains(text(),'Cheque')]/following-sibling::td/a[contains(text(),'Avaliação')]");
+        if (!hasCrotForm) {
+            this.logger.error("CPF não possui formulário de cheque especial", cpf);
+        }
+        const hasCreditCardForm = await page.isXpathPresent("//*[contains(text(),'Cartão')]/following-sibling::td/a[contains(text(),'Avaliação')]");
+        if (!hasCreditCardForm) {
+            this.logger.error("cpf não possui formulário de Cartão de Crédito", cpf);
+        }
     }
 
     async getInfosCrot(page, account, approvalStatusCrot, crotFinancingValue, financingValueFormatted) {
-        await Promise.all([
-            page.isXpathPresent("//*[contains(text(),'Cheque')]/following-sibling::td/a[contains(text(),'Avaliação')]")
-        ]);
-
         await Promise.all([
             page.clickByXpath("//*[contains(text(),'Cheque')]/following-sibling::td/a[contains(text(),'Avaliação')]"),
             page.waitForNavigation({ waitUntil: "networkidle0" })
@@ -99,9 +101,24 @@ export class CheckCrotAndCreditPage {
 
         await Promise.all([
             approvalStatusCrot = await page.innerText(".header"),
+        ])
+
+        if (approvalStatusCrot === "Reprovado") {
+            account.setCrotResult({
+                approvalStatus: approvalStatusCrot,
+                financingValue: 0,
+                financingValueFormatted: 0
+            })
+            await Promise.all([
+                page.click("a[title*='Voltar']"),
+                page.waitForNavigation({ waitUntil: "networkidle0" })
+            ]);
+            return;
+        }
+            
+        await Promise.all([
             crotFinancingValue = await page.innerTextByXpath("//td[contains(text(),'Valor Financiamento')]/following-sibling::td[1]")
         ])
-        
         financingValueFormatted = parseInt(crotFinancingValue.replace(/\./g, ''));
 
         if(financingValueFormatted > 200 ) {
@@ -110,11 +127,9 @@ export class CheckCrotAndCreditPage {
             financingValueFormatted = newValueRound * 50; 
         }
         account.setCrotResult({
-            crot: {
                 approvalStatus: approvalStatusCrot,
                 financingValue: crotFinancingValue,
                 financingValueFormatted: `${financingValueFormatted.toString()},00`
-            }
         });
 
         await Promise.all([
@@ -126,10 +141,6 @@ export class CheckCrotAndCreditPage {
 
     async getInfosCreditCard(page, account, approvalStatusCC, creditCardFinancingValue) {
         await Promise.all([
-            page.isXpathPresent("//*[contains(text(),'Cartão')]/following-sibling::td/a[contains(text(),'Avaliação')]")
-        ]);
-
-        await Promise.all([
             page.clickByXpath("//*[contains(text(),'Cartão')]/following-sibling::td/a[contains(text(),'Avaliação')]"),
             page.waitForNavigation({ waitUntil: "networkidle0" })
         ]);
@@ -140,8 +151,23 @@ export class CheckCrotAndCreditPage {
 
         await Promise.all([
             approvalStatusCC = await page.innerText(".header"),
+        ]);
+
+        if (approvalStatusCC === "Reprovado") {
+            account.addCreditCart({
+                approvalStatus: approvalStatusCC,
+                financingValue: 0
+            });
+            await Promise.all([
+                page.click("a[title*='Voltar']"),
+                page.waitForNavigation({ waitUntil: "networkidle0" })
+            ]);
+            return;
+        }
+
+        await Promise.all([
             creditCardFinancingValue = await page.innerTextByXpath("//td[contains(text(),'Valor Financiamento')]/following-sibling::td[1]")
-        ])
+        ]);
         account.addCreditCart({
                 approvalStatus: approvalStatusCC,
                 financingValue: creditCardFinancingValue

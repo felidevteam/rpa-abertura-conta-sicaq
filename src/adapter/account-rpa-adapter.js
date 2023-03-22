@@ -4,20 +4,14 @@ export class accountRpaAdapter {
 
     /**
      * @param {import("amqplib").Message} message
-     * @return {Ir}
+     * @return {Account}
      */
     static fromAmqpRequestMessage(message) {
         const jsonMessage = JSON.parse(message.content);
 
-        const account = new Account();
+        const account = new Account(jsonMessage.customerHighestIncome, jsonMessage.customerSecondChoice, jsonMessage.statusCrot, jsonMessage.statusCreditCard);
 
-        account.setAccountResult({
-            customerHighestIncome: jsonMessage.customerHighestIncome,
-            customerSecondChoice: jsonMessage.customerSecondChoice,
-            statusCrot: jsonMessage.statusCrot,
-            statusCreditCard: jsonMessage.statusCreditCard,
-            correspondent: jsonMessage.correspondent
-        })
+        account.setCorrespondent(jsonMessage.correspondent)
         
         return account;
     }

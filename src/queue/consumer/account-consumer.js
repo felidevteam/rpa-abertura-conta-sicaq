@@ -35,7 +35,7 @@ export class AccountConsumer {
                 logger.debug(`Ops, esse robô não era pra ser executado pois nenhum checkbox foi marcado...   Crot:${jsonMessage.statusCrot}  CreditCard:${jsonMessage.statusCreditCard}`)
                 return;
             }
-             const result = await this.accountService.checkAccountOverDraft(account.AccountResult);
+             const result = await this.accountService.checkAccountOverDraft(account);
             logger.debug("Mensagem recebida",
              { 
                 // TODO AJUSTAR LOG

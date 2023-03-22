@@ -10,7 +10,7 @@ export class CreditCardPage {
         this.logger = logger;
     }
 
-    async checkCreditCardSituation(page, account) {
+    async createCreditCard(page, account) {
 
         await Promise.all([
             page.isSelectorPresent("#aMenuLink"),
@@ -45,13 +45,17 @@ export class CreditCardPage {
 
         await Promise.all([
             page.click("#cpftdor"),
-            page.type("#cpftdor", account._result.cpfCliente),
+            page.type("#cpftdor", account.customerHighestIncome.cpf),
             page.setSelectValue("#cmbTipoCartao", "9"),
         ]);
 
         await Promise.all([
             page.click("a[title*='Consultar cliente']")
         ]);
+
+        if(!!account.customerSecondChoice){
+            await this.createAdditionalCard(page, account.customerSecondChoice.cpf, account.customerSecondChoice.shortName);
+        }
 
         await Promise.all([
             page.setSelectValue("#cmbEnderecoFaturaSimples", "1"),
@@ -80,11 +84,47 @@ export class CreditCardPage {
 
         await Promise.all([
             page.click("#limiteCartaoSimples"),
-            page.type("#limiteCartaoSimples", account._result.creditCard.financingValue),
+            page.type("#limiteCartaoSimples", account.creditCards[0].financingValue),
         ]);
 
         await Promise.all([
             page.click(".btn-azul[title*='Solicita']")
+        ]);
+
+        await Promise.all([
+            page.click("a[title*='Imprimir'")
+        ]);
+    }
+
+    async createAdditionalCard(page, cpf, shortName) {
+        await Promise.all([
+            page.isSelectorPresent("#cmbCartaoAdcional")
+        ]);
+
+        await Promise.all([
+            page.setSelectValue("#cmbCartaoAdcional", "S")
+        ]);
+
+        await Promise.all([
+            page.click("#numeroCpf1"),
+            page.type("#numeroCpf1", cpf)
+        ]);
+
+        await Promise.all([
+            page.click("a[title*='Consultar CPF']")
+        ])
+
+        await Promise.all([
+            page.click("#nomeReduzido1"),
+            page.type("#nomeReduzido1", shortName)
+        ]);
+
+        await Promise.all([
+            page.setSelectValue("#cmbGrauParentesco", "1")
+        ]);
+
+        await Promise.all([
+            page.click("a[title='Inserir']")
         ]);
     }
 }

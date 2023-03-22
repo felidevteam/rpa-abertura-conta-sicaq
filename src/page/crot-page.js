@@ -10,7 +10,7 @@ export class CrotPage {
         this.logger = logger;
     }
 
-    async checkOverDraftSituation(page, account) {
+    async createAccountByCrot(page, account) {
         
         await Promise.all([
             page.isSelectorPresent("#aMenuLink")
@@ -38,7 +38,7 @@ export class CrotPage {
         ]);
 
         await Promise.all([
-            page.type("input[name*='numeroCpf']", account._result.cpfCliente)
+            page.type("input[name*='numeroCpf']", account.customerHighestIncome.cpf)
         ]);
 
         await Promise.all([
@@ -70,19 +70,25 @@ export class CrotPage {
             page.setSelectValue("#tipoConta", "1")
         ]);
 
-        if(account._result.crot.statusCrot === "Aprovada") {
+        if(account.crot.approvalStatus === "Aprovada") {
             await Promise.all([
                 page.setSelectValue("#contaCCheque", "S"),
                 page.waitForNavigation({ waitUntil: "networkidle0" })
             ]);
             await Promise.all([
                 page.click("#chequeEspecial"),
-                page.type("#chequeEspecial", account._result.crot.financingValueFormatted)
+                page.type("#chequeEspecial", account.crot.financingValueFormatted)
             ])
             await Promise.all([
                 page.click("#adepNAO")
             ])
 
+        }
+        if(account.crot.approvalStatus === "Reprovado") {
+            await Promise.all([
+                page.setSelectValue("#contaCCheque", "N"),
+                page.waitForNavigation({ waitUntil: "networkidle0" })
+            ]);
         }
 
         await Promise.all([
@@ -91,6 +97,11 @@ export class CrotPage {
 
         await Promise.all([
             page.click("#btnEncaminhar")
+        ]);
+
+
+        await Promise.all([
+            page.click("a[title*='Imprimir'")
         ]);
 
     }
