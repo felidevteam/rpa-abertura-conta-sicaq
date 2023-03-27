@@ -1,3 +1,6 @@
+import { CreditDownloadEvent } from "../util/credit-download-event.js";
+import { PuppeteerDownloadObserver } from "../util/puppeteer-download-observer.js";
+
 export class CreditCardPage {
 
     /**
@@ -53,7 +56,7 @@ export class CreditCardPage {
             page.click("a[title*='Consultar cliente']")
         ]);
 
-        if(!!account.customerSecondChoice){
+        if (!!account.customerSecondChoice) {
             await this.createAdditionalCard(page, account.customerSecondChoice.cpf, account.customerSecondChoice.shortName);
         }
 
@@ -90,6 +93,10 @@ export class CreditCardPage {
         await Promise.all([
             page.click(".btn-azul[title*='Solicita']")
         ]);
+
+        const downloadObserver = new PuppeteerDownloadObserver(page.getBrowser());
+        downloadObserver.register(new CreditDownloadEvent(account));
+        downloadObserver.boot();
 
         await Promise.all([
             page.click("a[title*='Imprimir'")

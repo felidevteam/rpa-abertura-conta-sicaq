@@ -42,35 +42,6 @@ export class Browser {
                 "--disk-cache-size=0"
             ]
         });
-        const downloadFolder = "./downloads"
-        let guids = {};
-        let client = await browser.target().createCDPSession();
-        await client.send('Browser.setDownloadBehavior', {
-            behavior: 'allow', //allow downloading file and save the file using guid as the filename
-            downloadPath: downloadFolder, // specify the download folder
-            eventsEnabled: true //set true to emit download events (e.g. Browser.downloadWillBegin and Browser.downloadProgress)
-        });
-
-        client.on('Browser.downloadWillBegin', async (event) => {
-
-            console.log(typeof(event.url))
-
-            if(!!event.url && event.url.includes("pre_abertura_conta")) {
-                guids[event.guid] = 'formulario_pre_abertura_conta.pdf';
-            }
-
-            if(!!event.url && event.url.includes("cartao_credito")) {
-                guids[event.guid] = 'formulario_cartao_credito.pdf';
-            }
-            console.log("fazendo download....")
-        });
-
-        client.on('Browser.downloadProgress', async (event) => {
-            // when the file has been downloaded, locate the file by guid and rename it
-            if(event.state === 'completed') {
-                fs.renameSync(path.resolve(downloadFolder, "formulario.pdf"), path.resolve(downloadFolder, guids[event.guid]));
-            }
-        });
 
         const ppage = await browser.newPage();
         await ppage.setViewport({ width: 1024, height: 768 });
@@ -90,6 +61,13 @@ export class Page {
      */
     constructor(puppeteerPage) {
         this._page = puppeteerPage;
+    }
+
+    /**
+     * @returns {puppeteer.Browser}
+     */
+    getBrowser() {
+        return this._page.browser();
     }
 
     /**
@@ -141,54 +119,54 @@ export class Page {
         return await this._page.evaluate(callback, args);
     }
 
-  /**
-   * Retorna o conteúdo preenchido em um input[type=text]
-   * @param {string} selector
-   * @returns {Promise<string|null>}
-   */
-   async value(selector) {
-            return await this.native(selector => {
-                const element = document.querySelector(selector);
-                if (element) {
-                    return element.value;
-                }
-    
-                return null;
-            }, selector);
-        }
-    
-        /**
-         * Retorna o node de texto a partir de um selector
-         * @param {string} selector
-         * @returns {Promise<string|null>}
-         */
-        async innerText(selector) {
-            return await this.native(selector => {
-                const element = document.querySelector(selector);
-                if (element) {
-                    return element.innerText;
-                }
-    
-                return null;
-            }, selector);
-        }
+    /**
+     * Retorna o conteúdo preenchido em um input[type=text]
+     * @param {string} selector
+     * @returns {Promise<string|null>}
+     */
+    async value(selector) {
+        return await this.native(selector => {
+            const element = document.querySelector(selector);
+            if (element) {
+                return element.value;
+            }
 
-        /**
-         * Retorna o node de texto a partir de um xPath
-         * @param {string} selector
-         * @returns {Promise<string|null>}
-        */
-        async innerTextByXpath(xpath) {
-            return await this.native(xpath => {
-                const element = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-                if (element) {
-                    return element.innerText;
-                }
-            
-                return null;
-            }, xpath);
-        }
-    
+            return null;
+        }, selector);
+    }
+
+    /**
+     * Retorna o node de texto a partir de um selector
+     * @param {string} selector
+     * @returns {Promise<string|null>}
+     */
+    async innerText(selector) {
+        return await this.native(selector => {
+            const element = document.querySelector(selector);
+            if (element) {
+                return element.innerText;
+            }
+
+            return null;
+        }, selector);
+    }
+
+    /**
+     * Retorna o node de texto a partir de um xPath
+     * @param {string} selector
+     * @returns {Promise<string|null>}
+    */
+    async innerTextByXpath(xpath) {
+        return await this.native(xpath => {
+            const element = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+            if (element) {
+                return element.innerText;
+            }
+
+            return null;
+        }, xpath);
+    }
+
 
     /**
      * Verifica se existe o selector informado

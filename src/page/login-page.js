@@ -32,11 +32,11 @@ export class LoginPage {
                     await dialog.accept()
                 })
                 await this.checkCrotAndCreditPage.checkCrotAndCreditCard(account, page);
-                if(account.statusCrot){
+                if (account.statusCrot) {
                     await this.crotPage.createAccountByCrot(page, account);
                 }
-                if(account.statusCreditCard) {
-                    if(account.creditCards[0].approvalStatus === "Aprovada") {
+                if (account.statusCreditCard) {
+                    if (account.creditCards[0].approvalStatus === "Aprovada") {
                         await this.creditCardPage.createCreditCard(page, account);
                     }
                 }
@@ -45,7 +45,7 @@ export class LoginPage {
             } catch (error) {
                 throw error;
             } finally {
-                if(this.page) {
+                if (this.page) {
                     await this.page.browser.close();
                 }
             }
@@ -63,56 +63,56 @@ export class LoginPage {
     async loginSicaq(correspondenteAtual, baseHost, page) {
 
         await page.navigate(baseHost);
-    
+
         await Promise.all([
             page.isSelectorPresent(`#convenio`),
             page.isSelectorPresent(`#login`),
             page.isSelectorPresent(`#password`)
         ]);
-    
+
         await page.native((correspondenteAtual) => {
             document.getElementById("convenio").value = correspondenteAtual.cod_correspondente;
             document.getElementById("login").value = correspondenteAtual.login;
             document.getElementById("password").value = correspondenteAtual.senha;
-    
+
             return Promise.resolve(true);
         }, correspondenteAtual)
-    
+
         await page.waitTimeout(1500);
-    
+
         await Promise.all([
             page.click("input[value='Confirma']"),
             page.waitForNavigation({ waitUntil: "networkidle0" })
         ]);
-    
+
         await page.waitTimeout(1500);
-    
+
         await this.checkLogin(correspondenteAtual);
     }
-    
+
     async checkLogin(correspondenteAtual) {
         let success = true;
         try {
             const text = await page.$eval("#form-login", divs => divs.innerText)
-    
+
             success = !(
                 text.toLowerCase().includes("dados invalidos") ||
                 text.toLowerCase().includes("operador bloqueado")
             );
         } catch (error) { }
-    
+
         if (!success) {
             // correspondenteAtual.bloqueado = true;
-    
+
             // const rpasSenhaBloqueadaQueue = await RpasSenhaBloqueadaQueueBuilder.build();
             // await rpasSenhaBloqueadaQueue.sendMessage(correspondenteAtual);
-    
+
             // loginResult.data.forEach(correspondente => {
             //     if (correspondente.id == correspondenteAtual.id) {
             //         correspondente.bloqueado = true;
             //     }
             // });
-    
+
             await DateTimeTools.delay(100000);
             throw new RpaAccountSicaqError("Login bloqueado", this.jsonMessage, correspondenteAtual, true);
         }

@@ -4,6 +4,7 @@ export class AccountConsumer {
     /**
      * @param {import("../../amqp-server").AmqpServer} amqpServer 
      * @param {string} queueName 
+     * @param {import("../../service/account-service").AccountService} accountService 
      * @param {import("../publisher/account-publisher").AccountPublisher} accountResultPublisher
      * @param {import("simplified-logger").Logger} logger 
      */

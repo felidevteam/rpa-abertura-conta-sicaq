@@ -1,3 +1,6 @@
+import { CrotDownloadEvent } from "../util/crot-download-event.js";
+import { PuppeteerDownloadObserver } from "../util/puppeteer-download-observer.js";
+
 export class CrotPage {
 
     /**
@@ -11,7 +14,7 @@ export class CrotPage {
     }
 
     async createAccountByCrot(page, account) {
-        
+
         await Promise.all([
             page.isSelectorPresent("#aMenuLink")
         ]);
@@ -20,7 +23,7 @@ export class CrotPage {
             page.click("#aMenuLink"),
             page.waitForNavigation({ waitUntil: "networkidle0" })
         ]);
-        
+
         await Promise.all([
             page.isSelectorPresent("#menu-principal"),
             page.isSelectorPresent("a[title='Abertura de Contas']")
@@ -57,7 +60,7 @@ export class CrotPage {
             address = page.innerText("#endereco")
         ]);
 
-        if(!address) {
+        if (!address) {
             return;
         }
         await Promise.all([
@@ -70,7 +73,7 @@ export class CrotPage {
             page.setSelectValue("#tipoConta", "1")
         ]);
 
-        if(account.crot.approvalStatus === "Aprovada") {
+        if (account.crot.approvalStatus === "Aprovada") {
             await Promise.all([
                 page.setSelectValue("#contaCCheque", "S"),
                 page.waitForNavigation({ waitUntil: "networkidle0" })
@@ -84,7 +87,7 @@ export class CrotPage {
             ])
 
         }
-        if(account.crot.approvalStatus === "Reprovado") {
+        if (account.crot.approvalStatus === "Reprovado") {
             await Promise.all([
                 page.setSelectValue("#contaCCheque", "N"),
                 page.waitForNavigation({ waitUntil: "networkidle0" })
@@ -99,11 +102,13 @@ export class CrotPage {
             page.click("#btnEncaminhar")
         ]);
 
+        const downloadObserver = new PuppeteerDownloadObserver(page.getBrowser());
+        downloadObserver.register(new CrotDownloadEvent(account));
+        downloadObserver.boot();
 
         await Promise.all([
             page.click("a[title*='Imprimir'")
         ]);
-
     }
-    
+
 }
