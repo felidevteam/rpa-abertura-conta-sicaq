@@ -39,9 +39,6 @@ export class LoginPage {
                     if(account.creditCards[0].approvalStatus === "Aprovada") {
                         await this.creditCardPage.createCreditCard(page, account);
                     }
-                    // if(!!account.creditCards[1] && account.creditCards[1].approvalStatus === "Aprovada") {
-                    //     await this.creditCardPage.createCreditCard(page, account.customerSecondChoice.cpf, account.creditCards[1].financingValue);
-                    // }
                 }
 
 

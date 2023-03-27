@@ -1,4 +1,6 @@
 import puppeteer from "puppeteer";
+import fs from "fs";
+import path from "path";
 
 /**
  * Manipula navegador de internet
@@ -40,17 +42,34 @@ export class Browser {
                 "--disk-cache-size=0"
             ]
         });
+        const downloadFolder = "./downloads"
+        let guids = {};
         let client = await browser.target().createCDPSession();
         await client.send('Browser.setDownloadBehavior', {
             behavior: 'allow', //allow downloading file and save the file using guid as the filename
-            downloadPath: './downloads', // specify the download folder
+            downloadPath: downloadFolder, // specify the download folder
             eventsEnabled: true //set true to emit download events (e.g. Browser.downloadWillBegin and Browser.downloadProgress)
         });
 
         client.on('Browser.downloadWillBegin', async (event) => {
-            //some logic here to determine the filename
-            //the event provides event.suggestedFilename and event.url
+
+            console.log(typeof(event.url))
+
+            if(!!event.url && event.url.includes("pre_abertura_conta")) {
+                guids[event.guid] = 'formulario_pre_abertura_conta.pdf';
+            }
+
+            if(!!event.url && event.url.includes("cartao_credito")) {
+                guids[event.guid] = 'formulario_cartao_credito.pdf';
+            }
             console.log("fazendo download....")
+        });
+
+        client.on('Browser.downloadProgress', async (event) => {
+            // when the file has been downloaded, locate the file by guid and rename it
+            if(event.state === 'completed') {
+                fs.renameSync(path.resolve(downloadFolder, "formulario.pdf"), path.resolve(downloadFolder, guids[event.guid]));
+            }
         });
 
         const ppage = await browser.newPage();
