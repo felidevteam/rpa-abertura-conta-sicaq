@@ -1,4 +1,7 @@
 import DateTimeTools from '../tools/datetime-tools.js'
+import { PuppeteerDownloadObserver } from "../util/puppeteer-download-observer.js";
+import { CreditDownloadEvent } from "../util/credit-download-event.js";
+import { CrotDownloadEvent } from "../util/crot-download-event.js";
 
 export class LoginPage {
 
@@ -19,6 +22,7 @@ export class LoginPage {
     }
 
     async login(account, loginResult) {
+        /** @type {import("../browser").Page} */
         let page = null;
         let baseHost = "https://caixaaqui.caixa.gov.br";
         let correspondenteAtual = loginResult.data.find(correspondente => correspondente.cod_correspondente == account.correspondent.code);
@@ -26,6 +30,11 @@ export class LoginPage {
             try {
 
                 page = await this.browser.getPage();
+
+                const downloadObserver = new PuppeteerDownloadObserver(page.getBrowser());
+                downloadObserver.register(new CreditDownloadEvent(account));
+                downloadObserver.register(new CrotDownloadEvent(account));
+                downloadObserver.boot();
 
                 await this.loginSicaq(correspondenteAtual, baseHost, page);
                 await page.on('dialog', async dialog => {
@@ -41,12 +50,11 @@ export class LoginPage {
                     }
                 }
 
-
             } catch (error) {
                 throw error;
             } finally {
-                if (this.page) {
-                    await this.page.browser.close();
+                if (page) {
+                    await page.close();
                 }
             }
         } else {

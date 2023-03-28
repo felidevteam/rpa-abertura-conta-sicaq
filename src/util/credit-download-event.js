@@ -1,33 +1,33 @@
 import { DownloadEvent } from "./download-event.js";
 import { resolve } from "node:path";
-import { renameSync, rmSync } from "node:fs";
 
 export class CreditDownloadEvent extends DownloadEvent {
     /**
      * @param {import("../entity/account").Account} account
-     * @param {boolean} keepFileAfterRead
      */
-    constructor(account, keepFileAfterRead = false) {
+    constructor(account) {
         super();
 
         this._account = account;
-        this._keepFileAfterRead = keepFileAfterRead;
+        this._guidList = new Map();
+    }
+
+    async downloadWillBegin(event) {
+        if (event.url.includes("cartao_credito")) {
+            this._guidList.set(event.guid, true);
+        }
     }
 
     async downloadCompleted(event) {
-        // aqui o arquivo vai ter o nome igual ao guid, não necessita renomear imediatamente
-        const basename = resolve(this._downloadPath, event.guid);
+        if (this._guidList.has(event.guid)) {
+            // aqui o arquivo vai ter o nome igual ao guid, não necessita renomear
+            const basename = resolve(this._downloadPath, event.guid);
 
-        // subir o arquivo no spaces
-        // use os dados em `this._account`
-        //uploadAttachPdf()
+            // TODO subir o arquivo no spaces
+            // use os dados em `this._account`
+            console.log(`subindo credit de ${this._account.cpfCliente} a partir de ${basename}`);
 
-        // apagar, ou não, o arquivo ao final
-        if (!this._keepFileAfterRead) {
-            rmSync(basename);
-            return;
+            this._guidList.delete(event.guid);
         }
-
-        renameSync(basename, resolve(this._downloadPath, `credit-${this._account.cpfCliente}.pdf`));
     }
 }

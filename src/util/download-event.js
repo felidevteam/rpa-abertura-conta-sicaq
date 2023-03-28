@@ -6,6 +6,10 @@ export class DownloadEvent {
         this._downloadPath = path;
     }
 
+    async downloadWillBegin(event) {
+        throw new Error("Not implemented");
+    }
+
     async downloadCompleted(event) {
         throw new Error("Not implemented");
     }

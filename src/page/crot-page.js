@@ -1,6 +1,3 @@
-import { CrotDownloadEvent } from "../util/crot-download-event.js";
-import { PuppeteerDownloadObserver } from "../util/puppeteer-download-observer.js";
-
 export class CrotPage {
 
     /**
@@ -101,10 +98,6 @@ export class CrotPage {
         await Promise.all([
             page.click("#btnEncaminhar")
         ]);
-
-        const downloadObserver = new PuppeteerDownloadObserver(page.getBrowser());
-        downloadObserver.register(new CrotDownloadEvent(account));
-        downloadObserver.boot();
 
         await Promise.all([
             page.click("a[title*='Imprimir'")
