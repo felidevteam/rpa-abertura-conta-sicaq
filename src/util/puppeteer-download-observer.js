@@ -27,20 +27,23 @@ export class PuppeteerDownloadObserver {
             eventsEnabled: true
         });
 
-        client.on('Browser.downloadWillBegin', async event => {
+        client.on("Browser.downloadWillBegin", async event => {
             for (let handler of this._eventHandlerList) {
                 await handler.downloadWillBegin(event);
             }
         });
 
-        client.on('Browser.downloadProgress', async event => {
-            if (event.state === 'completed') {
-                for (let handler of this._eventHandlerList) {
-                    await handler.downloadCompleted(event);
-                }
-                if (!this._keepFileAfterRead) {
-                    const basename = resolve(this._downloadPath, event.guid);
-                    rmSync(basename);
+        client.on("Browser.downloadProgress", async event => {
+            if (event.state === "completed") {
+                try {
+                    for (let handler of this._eventHandlerList) {
+                        await handler.downloadCompleted(event);
+                    }
+                } finally {
+                    if (!this._keepFileAfterRead) {
+                        const basename = resolve(this._downloadPath, event.guid);
+                        rmSync(basename);
+                    }
                 }
             }
         });

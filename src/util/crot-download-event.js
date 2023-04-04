@@ -22,17 +22,13 @@ export class CrotDownloadEvent extends DownloadEvent {
 
     async downloadCompleted(event) {
         if (this._guidList.has(event.guid)) {
+            console.log(`subindo crot de ${this._account.cpfCliente}`);
+
             // aqui o arquivo vai ter o nome igual ao guid, não necessita renomear
-            const guidPath = resolve(this._downloadPath, event.guid);
-            const pdfPath = `${guidPath}.pdf`;
-            copyFileSync(guidPath, pdfPath);
-            const basename = resolve(this._downloadPath, pdfPath);
+            const basename = resolve(this._downloadPath, event.guid);
 
             // 31 é o id utilizado para Conta Corrente Caixa
-            // use os dados em `this._account`
             await uploadAttachPdf(this._account.customerHighestIncome.id, basename, 31);
-            rmSync(basename);
-            console.log(`subindo crot de ${this._account.cpfCliente} a partir de ${basename}`);
 
             this._guidList.delete(event.guid);
         }
