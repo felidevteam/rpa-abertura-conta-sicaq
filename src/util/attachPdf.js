@@ -1,25 +1,15 @@
+import { fileFromPath } from "formdata-node/file-from-path"
 import axios from 'axios';
 
 export async function uploadAttachPdf(cliente_id, attach, typeDocumentId) {
-    const baseAttachURL = `https://crosis.feli.com.vc/v1/apan/clientes/${cliente_id}/anexos`;
+    const baseAttachURL = `https://api-stg.feli.com.br/v1/apan/clientes/${cliente_id}/anexos`;
 
-    let headers = {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-    };
-    
-    let body = {
-        "documentos": [
-            {
-                "tipo_documento_id": typeDocumentId,
-                "arquivo": attach
-            }
-        ]
-    };
+    const data = new FormData();
+    data.append("tipo_documento_id", typeDocumentId);
+    data.append("arquivo", await fileFromPath(attach));
 
-    const result = axios.post(baseAttachURL, body, headers)
-    console.log(result.data);
-
+    await axios.post(
+        baseAttachURL,
+        data
+    );
 }
-
-export async function downloadAttachPdf(urls, )

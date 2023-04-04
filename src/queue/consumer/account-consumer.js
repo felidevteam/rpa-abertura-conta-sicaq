@@ -31,7 +31,7 @@ export class AccountConsumer {
         await this.amqpServer.assertQueue(this.queueName);
         this.consumerTag = await this.amqpServer.consume(this.queueName, async message => {
 
-            const account = accountRpaAdapter.fromAmqpRequestMessage(message)
+            const account = accountRpaAdapter.fromAmqpRequestMessage(message);
             if (account.statusCrot === false && account.statusCreditCard === false){
                 logger.debug(`Ops, esse robô não era pra ser executado pois nenhum checkbox foi marcado...   Crot:${jsonMessage.statusCrot}  CreditCard:${jsonMessage.statusCreditCard}`)
                 return;

@@ -1,4 +1,6 @@
 import { DownloadEvent } from "./download-event.js";
+import { uploadAttachPdf } from "./attachPdf.js"
+import { rename } from "node:fs";
 import { resolve } from "node:path";
 
 export class CrotDownloadEvent extends DownloadEvent {
@@ -21,10 +23,16 @@ export class CrotDownloadEvent extends DownloadEvent {
     async downloadCompleted(event) {
         if (this._guidList.has(event.guid)) {
             // aqui o arquivo vai ter o nome igual ao guid, não necessita renomear
-            const basename = resolve(this._downloadPath, event.guid);
+            const guidPath = resolve(this._downloadPath, event.guid);
+            const pdfPath = `${guidPath}.pdf`;
+            rename(guidPath, pdfPath, function (err) {
+                if (err) throw err
+            });
+            const basename = resolve(this._downloadPath, pdfPath);
 
-            // TODO subir o arquivo no spaces
+            // 31 é o id utilizado para Conta Corrente Caixa
             // use os dados em `this._account`
+            await uploadAttachPdf(this._account.customerHighestIncome.id, basename, 31);
             console.log(`subindo crot de ${this._account.cpfCliente} a partir de ${basename}`);
 
             this._guidList.delete(event.guid);
