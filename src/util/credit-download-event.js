@@ -1,4 +1,6 @@
 import { DownloadEvent } from "./download-event.js";
+import { uploadAttachPdf } from "./attachPdf.js"
+import { copyFileSync, rmSync } from "node:fs";
 import { resolve } from "node:path";
 
 export class CreditDownloadEvent extends DownloadEvent {
@@ -23,13 +25,12 @@ export class CreditDownloadEvent extends DownloadEvent {
             // aqui o arquivo vai ter o nome igual ao guid, não necessita renomear
             const guidPath = resolve(this._downloadPath, event.guid);
             const pdfPath = `${guidPath}.pdf`;
-            rename(guidPath, pdfPath, function (err) {
-                if (err) throw err
-            });
+            copyFileSync(guidPath, pdfPath);
             const basename = resolve(this._downloadPath, pdfPath);
 
             // 51 é o id utilizado para Cartão de Credito
             await uploadAttachPdf(this._account.customerHighestIncome.id, basename, 51);
+            rmSync(basename);
             console.log(`subindo credit de ${this._account.cpfCliente} a partir de ${basename}`);
 
             this._guidList.delete(event.guid);
