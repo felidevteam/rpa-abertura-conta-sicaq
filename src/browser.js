@@ -1,6 +1,4 @@
 import puppeteer from "puppeteer";
-import fs from "fs";
-import path from "path";
 
 /**
  * Manipula navegador de internet
@@ -11,8 +9,8 @@ export class Browser {
      * @param {number} defaultTimeout
      */
     constructor(headless, defaultTimeout) {
-        this.headless = headless;
-        this.defaultTimeout = defaultTimeout;
+        this._headless = headless;
+        this._defaultTimeout = defaultTimeout;
     }
 
     /**
@@ -22,7 +20,7 @@ export class Browser {
      */
     async getPage() {
         const browser = await puppeteer.launch({
-            headless: false,
+            headless: this._headless,
             ignoreHTTPSErrors: true,
             args: [
                 "--no-sandbox",

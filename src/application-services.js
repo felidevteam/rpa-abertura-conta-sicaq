@@ -49,6 +49,12 @@ export default {
 
         return new AmqpServer(config, prefetch, logger);
     },
+    "app.browser": async c => {
+        const headless = "true" == process.env.BROWSER_HEADLESS;
+        const defaultTimeout = process.env.BROWSER_DEFAULT_TIMEOUT;
+
+        return new Browser(headless, defaultTimeout);
+    },
     "app.service.account": async c => {
         const browser = await c.get("app.browser");
         const cache = await c.get("app.cache");
@@ -82,12 +88,6 @@ export default {
         const logger = await c.get("app.logger");
 
         return new AccountConsumer(amqpServer, queueName, accountService, accountResultPublisher, logger);
-    },
-    "app.browser": async c => {
-        const headless = "true" == process.env.BROWSER_HEADLES;
-        const defaultTimeout = process.env.BROWSER_DEFAULT_TIMEOUT;
-
-        return new Browser(headless, defaultTimeout);
     },
     "app.config.queue.consumer.rpa-state.exchange-name": async c => {
         return process.env.ACCOUNT_RPA_STATE_EXCHANGE_NAME;

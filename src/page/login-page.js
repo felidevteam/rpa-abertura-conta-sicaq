@@ -49,6 +49,7 @@ export class LoginPage {
                         await this.creditCardPage.createCreditCard(page, account);
                     }
                 }
+                await DateTimeTools.delay(10000);
 
             } catch (error) {
                 throw error;

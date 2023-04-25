@@ -22,13 +22,18 @@ export class CreditDownloadEvent extends DownloadEvent {
 
     async downloadCompleted(event) {
         if (this._guidList.has(event.guid)) {
-            console.log(`subindo credit de ${this._account.cpfCliente}`);
+            console.log(`subindo credit de ${this._account.customerHighestIncome.cpf}`);
 
             // aqui o arquivo vai ter o nome igual ao guid, não necessita renomear
-            const basename = resolve(this._downloadPath, event.guid);
+            const fileName = `${event.guid}.pdf`
+            const guidPath = resolve(this._downloadPath, event.guid);
+            const pdfPath = `${guidPath}.pdf`;
+            copyFileSync(guidPath, pdfPath);
+            const basePath = resolve(this._downloadPath, pdfPath);
 
             // 51 é o id utilizado para Cartão de Credito
-            await uploadAttachPdf(this._account.customerHighestIncome.id, basename, 51);
+            await uploadAttachPdf(this._account.customerHighestIncome.id, basePath, fileName, 51);
+            rmSync(basePath);
 
             this._guidList.delete(event.guid);
         }

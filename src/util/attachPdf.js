@@ -1,5 +1,6 @@
 import { env } from "node:process";
-import { fileFromPath } from "formdata-node/file-from-path"
+import FormData from "form-data";
+import fs from 'fs';
 import axios from 'axios';
 
 const _platformBasePath = env.PLATFORM_API_BASE_PATH;
@@ -20,23 +21,25 @@ async function _authToken() {
     return _token.data;
 }
 
-export async function uploadAttachPdf(cliente_id, attach, typeDocumentId) {
+export async function uploadAttachPdf(cliente_id, filePath, fileName, typeDocumentId) {
     try {
         const baseAttachURL = `${_platformBasePath}/v1/apan/clientes/${cliente_id}/anexos`;
         const token = await _authToken();
 
         const data = new FormData();
         data.append("documentos[0][tipo_documento_id]", typeDocumentId);
-        data.append("documentos[0][arquivo]", await fileFromPath(attach));
+        data.append("documentos[0][arquivo]", fs.createReadStream(filePath), fileName);
+
+        const headers = { ...data.getHeaders(), Authorization: `Bearer ${token}`};
 
         const resp = await axios.post(
             baseAttachURL,
             data,
-            { headers: { Authorization: `Bearer ${token}` } }
+            { headers }
         );
         console.log(resp);
     } catch (e) {
         // TODO tomar a decisão correta aqui
-        console.log(e.response.data.errors.detail);
+        console.log(e);
     }
 }

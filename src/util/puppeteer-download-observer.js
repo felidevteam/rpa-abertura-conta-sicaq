@@ -33,7 +33,7 @@ export class PuppeteerDownloadObserver {
             }
         });
 
-        client.on("Browser.downloadProgress", async event => {
+        client.on("Browser.downloadProgress", async (event) => {
             if (event.state === "completed") {
                 try {
                     for (let handler of this._eventHandlerList) {
@@ -47,6 +47,8 @@ export class PuppeteerDownloadObserver {
                 }
             }
         });
+
+        Promise.resolve(client);
     }
 
     /**
