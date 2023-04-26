@@ -1,26 +1,3 @@
-        // this.idCostumerHigestIncome = null,
-        // this.cpfCostumerHigestIncome = null,
-        // this.cpfCostumerSecondChoice = null,
-        // this.statusCrot = null,
-        // this.statusCreditCard = null,
-        // this.correspondent = {
-        //     id: null,
-        //     code: null,
-        //     login: null,
-        //     password: null
-        // },
-        // this.crot = {
-        //     approvalStatus: null,
-        //     financingValue: null,
-        //     financingValueFormatted: null
-        // },
-        // this.creditCards = [ 
-        //     {
-        //         approvalStatus: null,
-        //         financingValue: null
-        //     }
-        // ]
-
 export class Account {
     constructor(customerHighestIncome, customerSecondChoice, statusCrot, statusCreditCard) {
         this.customerHighestIncome = customerHighestIncome,
