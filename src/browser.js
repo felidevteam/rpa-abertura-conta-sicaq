@@ -1,3 +1,5 @@
+import { join } from "node:path";
+import { homedir } from "node:os";
 import puppeteer from "puppeteer";
 
 /**
@@ -55,7 +57,7 @@ export class Browser {
  */
 export class Page {
     /**
-     * @param {puppeteer.Page} puppeteerPage 
+     * @param {import("puppeteer").Page} puppeteerPage 
      */
     constructor(puppeteerPage) {
         this._page = puppeteerPage;
@@ -66,6 +68,13 @@ export class Page {
      */
     getBrowser() {
         return this._page.browser();
+    }
+
+    async screenShot() {
+        const tmpFile = join(homedir(), `print_${(new Date()).getTime()}.png`);
+        await this._page.screenshot({ fullPage: true, path: tmpFile });
+
+        return tmpFile;
     }
 
     /**
