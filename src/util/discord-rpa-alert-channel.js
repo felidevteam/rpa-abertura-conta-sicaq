@@ -1,5 +1,4 @@
 import { fileFromPath } from "formdata-node/file-from-path"
-import { AbstractService } from "../lib/abstract-service.js";
 import axios from "axios";
 
 export const avatar = {
@@ -9,13 +8,11 @@ export const avatar = {
     serasa: "https://app.feli.com.br/assets/images/robots/serasa.png"
 };
 
-export class DiscordRpaAlertChannel extends AbstractService {
+export class DiscordRpaAlertChannel {
     /**
      * @param {string} username
      */
     constructor(username) {
-        super();
-
         this._username = username;
         this._hookUrl = "https://discord.com/api/webhooks/993856018448662558/bpuMiAZrPdymDV4If_xw-aHAfPFghAg474xhbadxY_igXzQFQjyebamNg4E3S68Ih3Nn";
     }
