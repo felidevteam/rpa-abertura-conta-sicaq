@@ -1,4 +1,4 @@
-import { DiscordRpaAlertChannel } from "../util/discord-rpa-alert-channel";
+import { DiscordRpaAlertChannel } from "../util/discord-rpa-alert-channel.js";
 
 export class CrotPage {
 
