@@ -37,9 +37,9 @@ export async function uploadAttachPdf(cliente_id, filePath, fileName, typeDocume
             data,
             { headers }
         );
-        console.log(resp);
     } catch (e) {
         // TODO tomar a decisão correta aqui
-        console.log(e);
+        const discordNotifier = new DiscordRpaAlertChannel("Abertura de Conta");
+        await discordNotifier.notificate({ content: "Erro ao enviar o pdf para a plataforma" });
     }
 }

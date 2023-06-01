@@ -1,6 +1,7 @@
 import DateTimeTools from '../tools/datetime-tools.js'
 import { PuppeteerDownloadObserver } from "../util/puppeteer-download-observer.js";
 import { CreditDownloadEvent } from "../util/credit-download-event.js";
+import { DiscordRpaAlertChannel } from "../util/discord-rpa-alert-channel.js";
 import { CrotDownloadEvent } from "../util/crot-download-event.js";
 
 export class LoginPage {
@@ -52,7 +53,10 @@ export class LoginPage {
                 await DateTimeTools.delay(10000);
 
             } catch (error) {
-                throw error;
+                const discordNotifier = new DiscordRpaAlertChannel("Abertura de Conta");
+                const printPath = await page.screenShot();
+                await discordNotifier.notificate({ content: "Print da tela ao finalizar preenchimento de formulário", files: [printPath] });
+                
             } finally {
                 if (page) {
                     await page.close();

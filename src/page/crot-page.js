@@ -1,5 +1,3 @@
-import { DiscordRpaAlertChannel } from "../util/discord-rpa-alert-channel.js";
-
 export class CrotPage {
 
     /**
@@ -97,9 +95,6 @@ export class CrotPage {
             page.click("a[title*='Gerar Nr Conta']"),
         ]);
 
-        const discordNotifier = new DiscordRpaAlertChannel("Abertura de Conta");
-        const printPath = await page.screenShot();
-        await discordNotifier.notificate({ content: "Print da tela ao finalizar preenchimento de formulário", files: [printPath] });
         await Promise.all([
             page.click("#btnEncaminhar")
         ]);

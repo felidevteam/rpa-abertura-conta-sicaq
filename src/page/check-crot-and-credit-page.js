@@ -78,7 +78,6 @@ export class CheckCrotAndCreditPage {
             page.waitForNavigation({ waitUntil: "networkidle0" })
         ]);
 
-        // TODO FAZER VERIFICAÇÃO LISTA VAZIA
         const hasCrotForm = await page.isXpathPresent("//*[contains(text(),'Cheque')]/following-sibling::td/a[contains(text(),'Avaliação')]");
         if (!hasCrotForm) {
             this.logger.error("CPF não possui formulário de cheque especial", cpf);
